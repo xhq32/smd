@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>主界面</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <style>
+        header {
+            background-color: #f2f2f2;
+            border-bottom: 1px solid #f2f2f2;
+        }
+        .header {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;            
+        }
+        .header a{
+            display: block;
+            padding: 20px;
+        }
+        .title {
+            line-height:40px;
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            flex: 1;
+            text-align: center;
+        }
+        .header .menu {
+            background-size: 30px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-image: url("../image/menu.png");
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header">
+        <a class="menu" tapmode="" onclick="sliding()"></a>
+        <div class="title" >私密达配送端</div>
+        <a class="member-center"></a>
+    </div>
+</header>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/func.js"></script>
+<script type="text/javascript" src="../script/doto.js"></script>
+<script>
+apiready = function() {
+
+    // 初始化事件监听
+    initEventListenner();
+
+    // 获取当前的位置信息
+    initLocation();
+
+    var header = $api.byId('header');
+
+    // 实现沉浸式状态栏效果
+    $api.fixStatusBar(header);
+
+    // 获取所有的分类菜单
+    // menus = $api.domAll(nav, '.menu');
+
+    // 从缓存中获取上一次选择的城市信息
+    // var currentCity = $api.getStorage('currentCity');
+
+    // 如果获取不到，说明还没有选择城市，打开城市选择Frame，并返回
+    // if (!currentCity) {
+    //     // fnOpenCitySelectorFrame();
+    //     return;
+    // }
+
+    // // 更新界面上显示的城市名称
+    // updateCityName(currentCity.name);
+
+    // // 打开首页的所有Frames
+    // openFrames();
+};
+
+ //    apiready = function () {
+	//     // $api.fixStatusBar($api.dom('.header'));
+ //        api.addEventListener({
+ //            name: 'keyback'
+ //        }, function(ret, err){
+ //            api.closeWidget();
+ //        });
+        
+	// };
+
+
+function sliding() {
+    api.openSlidPane({type: 'left'});
+}
+
+
+// 初始化事件监听
+function initEventListenner() {
+    // 监听城市切换事件（自定义事件）
+    // api.addEventListener({
+    //     name: 'cityChange'
+    // }, function(ret, err) {
+    //     if (ret) {
+    //         // 更新城市名称
+    //         updateCityName(ret.value.currentCity.name);
+
+    //         // 更新箭头状态
+    //         resetArrowState();
+
+    //         // 打开商品列表等首页的Frames
+    //         openFrames();
+    //     }
+    // });
+
+    // 拦截Android的返回键，在首页点击返回键，提示退出应用
+    api.addEventListener({
+        name: 'keyback'
+    }, function(ret, err) {
+        api.confirm({
+            title: '提示',
+            msg: '是否退出应用',
+            buttons: ['确定', '取消']
+        }, function(ret, err) {
+            if (ret.buttonIndex == 1) {
+                // 关闭当前的主Widget，就可以实现推出APP的效果
+                api.closeWidget({
+                    silent: true //直接退出，无需提示
+                });
+            }
+        });
+    });
+}
+
+function initLocation() {
+    // 加载百度地图模块
+    bMap = api.require('bMap');
+
+    // 获取当前经纬度
+    bMap.getLocation({
+        accuracy: '1000m', // 定位所在城市信息，不需要精准定位
+        autoStop: true, // 定位到经纬度后，立即自动停止定位服务
+        filter: 100000 // 基本无需处理位置更新的情况
+    }, function(ret, err) {
+        if (ret.status) {
+            // 根据经纬度获得城市名称
+            fnGetCityNameFromLocation(ret);
+        } else {
+            alert(err.code);
+        }
+    });
+}
+
+
+// 根据经纬度获得城市名称
+function fnGetCityNameFromLocation(location_) {
+    bMap.getNameFromCoords({
+        lon: location_.lon,
+        lat: location_.lat
+    }, function(ret, err) {
+        if (ret.status) {
+            // 判断当前所在的城市与上一次选择的城市是否一致
+            // fnCheckCityChange(ret.city);
+            //默认地址设置为成都
+            $api.setStorage('currentCity',ret.city);
+        }
+    });
+}
+</script>
+</body>
+</html>
