@@ -211,6 +211,9 @@ function fnInitUIInput() {
 
 function fnSearchInCity(msg_) {
     var currentCity = $api.getStorage('currentCity');
+    if (!currentCity) {
+        currentCity.name='成都';
+    }
     var bMap = api.require('bMap');
     bMap.searchInCity({
         city: currentCity.name,

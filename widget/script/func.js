@@ -153,6 +153,9 @@ function getCurrentTime(){
 function fnUpdateLocation() {
     // 加载百度地图模块
     var userInfo = $api.getStorage('userInfo');
+    if (!userInfo) {
+        return ;
+    }
     var setLocationTime = $api.getStorage('setLocationTime');
     setLocationTime=setLocationTime>0?setLocationTime:0;
     var time=getCurrentTime();
