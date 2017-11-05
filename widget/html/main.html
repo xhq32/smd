@@ -146,6 +146,11 @@ function initLocation() {
         if (ret.status) {
             // 根据经纬度获得城市名称
             fnGetCityNameFromLocation(ret);
+            api.toast({
+                msg: '地图坐标获取成功，当前lon='+ret.lon+',lat='+ret.lat,
+                duration: 2000,
+                location: 'middle'
+            });
         } else {
             alert(err.code);
         }
@@ -163,6 +168,11 @@ function fnGetCityNameFromLocation(location_) {
             // 判断当前所在的城市与上一次选择的城市是否一致
             // fnCheckCityChange(ret.city);
             //默认地址设置为成都
+            api.toast({
+                msg: '地图初始化成功，当前城市：'+ret.city,
+                duration: 2000,
+                location: 'middle'
+            });
             $api.setStorage('currentCity',ret.city);
         }
     });

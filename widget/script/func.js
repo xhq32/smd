@@ -12,6 +12,7 @@ function setOnStatus() {
             if (ret.ret=200) {
                 // 更新在线状态成功,
                 $api.setStorage('userstatus', 1);
+                $api.rmStorage('setLocationTime');
                 api.toast({
                     msg: '状态更新成功'
                 });
@@ -130,9 +131,13 @@ function fnOpenOfflineMapWin () {
 //未开通功能提示
 function fnNoOpen() {
     var time=getCurrentTime();
+    var currentCity = $api.getStorage('currentCity');
     var setLocationTime = $api.getStorage('setLocationTime');
+    if (!currentCity) {
+        currentCity={'name':'未定义'};
+    }
     api.toast({
-        msg: '该功能暂未开通'
+        msg: '该功能暂未开通,当前城市:'+currentCity.name
         // msg: '当前时间：'+time+",\n上次执行时间："+setLocationTime
     });
 }
