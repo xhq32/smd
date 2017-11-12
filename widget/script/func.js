@@ -58,6 +58,19 @@ function fnOpenMessageWin () {
     });
 }
 
+//打开菜单
+function sliding() {
+    api.openSlidPane({type: 'left'});
+}
+
+// 打开关于Window
+function fnOpenAboutWin () {
+    api.openWin({
+        name: 'about',
+        url: './about.html'
+    });
+}
+
 // 打开个人中心，如果没有登录则先登录；否则进入个人中心
 function fnOpenPersonalCenterWin() {
     // 从缓存中获取用户信息
@@ -227,3 +240,19 @@ function fnUpdateLocation() {
     }
 }
 
+function getMyDate(str){ 
+    var now = new Date(str),
+    y = now.getFullYear(),
+    m = now.getMonth() + 1,
+    d = now.getDate();
+return y + "-" + (m < 10 ? "0" + m : m) + "-" + (d < 10 ? "0" + d : d); 
+// return y + "-" + (m < 10 ? "0" + m : m) + "-" + (d < 10 ? "0" + d : d) + " " + now.toTimeString().substr(0, 8); 
+}
+
+function getMoney(number) {
+    return Math.round(number/100);
+}
+
+function getDistance(number) {
+    return Math.round(number/1000);
+}

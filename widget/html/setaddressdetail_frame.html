@@ -195,7 +195,7 @@ function fnInitUIInput() {
                 }, function(ret, err) {
                     if (ret) {
                         if (ret.status) {
-                            //console.log(ret.msg);
+                            // console.log(ret.msg);
                             fnSearchInCity(ret.msg);
                         }
                     } else {
@@ -213,6 +213,7 @@ function fnSearchInCity(msg_) {
     var currentCity = $api.getStorage('currentCity');
     if (!currentCity) {
         currentCity={name:'成都'};
+        // console.log('dddd');
     }
     var bMap = api.require('bMap');
     bMap.searchInCity({

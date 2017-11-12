@@ -67,7 +67,7 @@
         <div class="logo"></div>
         <div class="version">
             <div class="left">当前版本</div>
-            <div class="right">0.0.7测试版</div>
+            <div class="right" id="version">0.0.7测试版</div>
         </div>
     </section>
     <footer id="footer">
@@ -80,7 +80,15 @@
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript">
 apiready = function() {
+    init();
 };
+
+function init(){
+    var appVersion = api.appVersion;
+    var version=$api.byId('version');
+    // alert(JSON.stringify(appVersion));
+    version.innerHTML=appVersion;
+}
 </script>
 
 </html>

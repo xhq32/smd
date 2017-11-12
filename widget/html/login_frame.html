@@ -231,6 +231,7 @@ function fnLogin() {
                 msg: '登录成功',
             }, function(ret, err) {
                 // alert(JSON.stringify(ret));
+                console.log("登录成功"+JSON.stringify(ret));
                 if (ret) {
                     api.closeWin();
                 }
