@@ -53,7 +53,7 @@
 
 <body>
     <header id="header">
-        <div class="back" tapmode onclick="api.closeWin();"></div>
+        <div class="back" tapmode onclick="fnfreshMain();"></div>
         <h1>订单详情</h1>
         <div id="right" class="right" tapmode onclick="fnDelete();">删除</div>
     </header>
@@ -83,6 +83,19 @@ apiready = function() {
         bounces: false
     });
 };
+
+function fnfreshMain() {
+    // 
+    console.log("返回主页刷新一下！");
+    api.execScript({
+        name: 'main',
+        frameName: 'main_index',
+        script: 'getTodayOrderList();'
+    });
+    api.closeWin();
+    console.log("返回主页刷新结束！");
+}
+
 
 function fnDelete() {
     var userInfo = $api.getStorage('userInfo');

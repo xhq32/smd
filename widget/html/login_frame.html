@@ -215,6 +215,10 @@ function fnLogin() {
         }
         return;
     }
+    if (usernameValue.length!=11) {
+        console.log("登录操作,账号输入："+usernameValue+',长度='+usernameValue.length);
+        return;
+    }
     params = 'phone='+usernameValue+'&pwd='+passwordValue;
     api.ajax({
         // url: 'http://d.apicloud.com/mcm/api/user/login',

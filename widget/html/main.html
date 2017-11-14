@@ -81,13 +81,48 @@
         .today_main{
             background: #eeffff;
             font-size: 12px;
-            line-height: 22px;
+            line-height: 30px;
             text-align: center;
             color: #656565;
-            height: 22px;
+            height: 30px;
         }
         .today_main ul li{
             display:inline-block;
+        }
+
+        .today_main .title,section .content{
+            margin-top: 5px;
+        }
+        .today_main .title ul,section .content ul{
+            display:flex;
+
+        }
+        .today_main .title ul li,section .content ul li{
+            float: left;
+            flex: 1;
+        }
+
+        .list_main{
+            font-size: 12px;
+            line-height: 30px;
+            color: #656565;
+            height: 30px;
+        }
+        .list_main ul li{
+            display:inline-block;
+            width: 25%;
+        }
+
+        .list_main .title,section .content{
+            margin-top: 5px;
+        }
+        .list_main .title ul,section .content ul{
+            display:flex;
+
+        }
+        .list_main .title ul li,section .content ul li{
+            float: left;
+            flex: 1;
         }
         #tody_left{
             position: absolute;
@@ -168,6 +203,16 @@
             </ul>   
     </div>
 </section>
+<section class="list_main" id="list_main">
+    <div class="row clearfix">
+        <ul>
+            <li>&nbsp;</li>
+            <li>列表显示</li>
+            <li>地图显示</li>
+            <li>&nbsp;</li>
+        </ul>
+    </div>
+</section>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/func.js"></script>
 <script type="text/javascript">
@@ -184,32 +229,35 @@ apiready = function() {
     var order_mainH = $api.offset(order_main).h;
     var today_main = $api.byId('today_main');
     var today_mainH = $api.offset(today_main).h;
+    var list_main = $api.byId('list_main');
+    var list_mainH = $api.offset(list_main).h;
     // today_main order_main set_order notice header
-    var tatolH=headerH+noticeH+set_orderH+order_mainH+today_mainH;
+    var tatolH=headerH+noticeH+set_orderH+order_mainH+today_mainH+list_mainH;
     $api.byId('refresh').data_tag=tatolH;
-        console.log("this main");
-        console.log("tatolH="+tatolH);
-        api.openFrame({
-            name: 'main_index',
-            url: './main_index.html',
-            // reload:true,
-            rect: {
-                x: 0,
-                y: tatolH,
-                w: 'auto',
-                h: 'auto'
-            },
-            pageParam: {
-                name: 'test',
-                refresh:'0'
-            },
-            bounces: false,
-            softInputBarEnabled: false //不显示键盘上方的工具条
-        });
+    console.log("this main");
+    console.log("tatolH="+tatolH);
+    api.openFrame({
+        name: 'main_index',
+        url: './main_index.html',
+        // reload:true,
+        rect: {
+            x: 0,
+            y: tatolH,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: {
+            name: 'test',
+            refresh:'0'
+        },
+        bounces: false,
+        softInputBarEnabled: false //不显示键盘上方的工具条
+    });
+  
 };
 
 function fnrefresh() {
-    console.log("我想刷新了！");
+    console.log("我是主页，现在刷新了！");
     var tatolH=$api.byId('refresh').data_tag;
     window.location.reload(true);
     api.openFrame({
@@ -229,47 +277,29 @@ function fnrefresh() {
         scrollEnabled:true,
         softInputBarEnabled: false //不显示键盘上方的工具条
     });
-    console.log("我刷新完了！");
+    console.log("我是主页，刷新完了！");
 }
 
 //读取用户今天的基本情况
 function getToDayInfo() {
-    var header = $api.byId('header');
-    $api.fixStatusBar(header);
-
-    var headerH = $api.offset(header).h;
     var userInfo = $api.getStorage('userInfo');
-    if (!userInfo) {
-        api.openFrame({
-            name: 'login',
-            url: './login.html',
-            rect: {
-                x: 0,
-                y: headerH,
-                w: 'auto',
-                h: api.winHeight - headerH
-            },
-            bounces: false
-        });
-    }else{
-        var params='&user_id='+userInfo.userId;
-        console.log("加载用户今天的基本情况 参数="+params);
-        api.ajax({
-            url: 'http://api.isimida.cn/?service=App.Courier_User.GetToday' + params,
-            method: 'get'
-        }, function(ret, err) {
-            var rets=ret.data;
-            data=rets;
-            console.log("用户今天数据，订单请求结果,"+JSON.stringify(ret));
-            if (ret.ret==200) {
-                // 在界面中更新订单列表显示
-                fnUpdateToday(rets);
-                console.log("用户今天数据，填充数据结果");
-            } else {
-                // alert(JSON.stringify(ret));
-            }
-         });
-    }
+    var params='&user_id='+userInfo.userId;
+    console.log("加载用户今天的基本情况 参数="+params);
+    api.ajax({
+        url: 'http://api.isimida.cn/?service=App.Courier_User.GetToday' + params,
+        method: 'get'
+    }, function(ret, err) {
+        var rets=ret.data;
+        data=rets;
+        console.log("用户今天数据，订单请求结果,"+JSON.stringify(ret));
+        if (ret.ret==200) {
+            // 在界面中更新订单列表显示
+            fnUpdateToday(rets);
+            console.log("用户今天数据，填充数据结果");
+        } else {
+            // alert(JSON.stringify(ret));
+        }
+     });
 }
 
 function fnUpdateToday(data) {

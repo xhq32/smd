@@ -25,8 +25,24 @@
     </style>
 </head>
 <body>
+</body>
+<script type="text/javascript" src="script/api.js"></script>
 <script>
-    apiready = function () {
+apiready = function () {
+    var userInfo = $api.getStorage('userInfo');
+    if (!userInfo) {
+        api.openFrame({
+            name: 'login',
+            url: 'html/login.html',
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: api.winHeight
+            },
+            bounces: false
+        });
+    }else{
         api.openSlidLayout({
             type: 'left',
             leftEdge: 60,
@@ -42,6 +58,6 @@
 
         });
     }
+}
 </script>
-</body>
 </html>
