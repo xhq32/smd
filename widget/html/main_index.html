@@ -1,0 +1,501 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>主界面</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    section {
+        width: 100%;
+        min-height: 100%;
+    }
+
+    section .main{
+        height: auto;
+        margin-bottom:35px;
+        margin-left:4px;
+        margin-right:4px;
+    }
+
+    
+    .waiting{width:100%;height: 35px;line-height:35px;background-color: white;text-align: center; position:fixed!important; position:absolute; right:0px; bottom:0px!important; bottom:auto; top: expression(eval(document.compatMode && document.compatMode=='CSS1Compat') ? documentElement.scrollTop+(documentElement.clientHeight - this.clientHeight):document.body.scrollTop+(document.body.clientHeight - this.clientHeight));
+    }
+    .waiting .week{
+        color:red;
+    }
+    
+    .ware-1 {
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
+        padding-top: 10px;
+        border-bottom: 1px solid #d1d1d1;
+    }
+    
+    
+    .ware-1 .info {
+        width: 100%;
+        height: 114px;
+        box-sizing: border-box;
+        font-size: 13px;
+    }
+    .ware-1 .info .order_info {
+        color: red;
+    }
+
+    
+    .push-status {
+        width: 100%;
+        height: 40px;
+        font-size: 16px;
+        color: #888;
+        line-height: 40px;
+        text-align: center;
+        background-color: #fff;
+    }
+
+    .info .order_status_desc,.info .order_status_time{
+        position: absolute;
+        right: 0;
+    }
+    .info .create_order_date{
+        padding-left: 20px;
+    }
+    .info div{
+        height:24px;
+        line-height: 24px;
+    }
+    .info .distance_foryou{
+        margin: 0 -2px;
+    }
+    .info .file_list{
+        margin:0  8px;
+    }
+
+    .main .list{
+        width: 100%;
+        min-height: 200px;
+    }
+    
+    .main .empty {
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 300px;
+    }
+    
+    .highlight {
+        opacity: 0.7;
+    }
+
+    #addrNow{
+        position: absolute;
+        left:3px;
+    }
+    #setAddr{
+        position: absolute;
+        right:3px;
+    }
+    </style>
+</head>
+<body>
+<section>
+    <div class="main">
+        <div id="list" class="list"></div>
+        <div id="empty" class="empty"></div>
+    </div>
+</section>
+<div class="waiting">
+    <ul>
+        <li id="addrNow"></li>
+        <li id="setAddr"><a onclick="">更新位置</a></li>
+    </ul>
+</div>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/doT.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/func.js"></script>
+<script type="text/javascript" src="../script/doto.js"></script>
+<script>
+var data;
+// 分钟更新位置
+var updatetime=10;//单位分钟
+apiready = function() {
+    var refresh=api.pageParam.refresh;
+    console.log("传过来的变量refresh="+refresh);
+    // if (!refresh) {
+        
+        // 初始化事件监听
+        initEventListenner();
+
+        // 获取当前的位置信息
+        // 2017-11-18 11:27 临时屏蔽加载监听函数
+        initLocation();
+        // 注册监听
+        // initEventListener();
+    // }
+    // 加载今日订单
+    console.log("加载今日订单 准备 setBugReport");
+    setBugReport(200,'加载今日订单','');
+    getTodayOrderList();
+
+    // 设置当前位置
+    fnsetAddr();
+
+    // var header = $api.byId('header');
+
+    // 实现沉浸式状态栏效果
+    // $api.fixStatusBar(header);
+
+    // 获取所有的分类菜单
+    // menus = $api.domAll(nav, '.menu');
+
+    // 从缓存中获取上一次选择的城市信息
+    // var currentCity = $api.getStorage('currentCity');
+
+    // 如果获取不到，说明还没有选择城市，打开城市选择Frame，并返回
+    // if (!currentCity) {
+    //     // fnOpenCitySelectorFrame();
+    //     return;
+    // }
+
+    // // 更新界面上显示的城市名称
+    // updateCityName(currentCity.name);
+
+    // // 打开首页的所有Frames
+    // openFrames();
+};
+
+ //    apiready = function () {
+	//     // $api.fixStatusBar($api.dom('.header'));
+ //        api.addEventListener({
+ //            name: 'keyback'
+ //        }, function(ret, err){
+ //            api.closeWidget();
+ //        });
+        
+	// };
+
+
+// 初始化事件监听
+function initEventListenner() {
+    // 监听城市切换事件（自定义事件）
+    // api.addEventListener({
+    //     name: 'cityChange'
+    // }, function(ret, err) {
+    //     if (ret) {
+    //         // 更新城市名称
+    //         updateCityName(ret.value.currentCity.name);
+
+    //         // 更新箭头状态
+    //         resetArrowState();
+
+    //         // 打开商品列表等首页的Frames
+    //         openFrames();
+    //     }
+    // });
+
+    // 拦截Android的返回键，在首页点击返回键，提示退出应用
+    // console.log("启动监听");
+    // api.addEventListener({
+    //     name: 'keyback'
+    // },function(ret,err) {
+    //     console.log("启动监听,返回数据 成功="+JSON.stringify(ret));
+    //     console.log("启动监听,返回数据 失败="+JSON.stringify(err));
+    //     // getTodayOrderList();
+    // });
+
+    /*api.addEventListener({
+        name: 'keyback'
+    }, function(ret, err) {
+        console.log("主界面点击返回键响应,"+JSON.stringify(ret));
+        api.confirm({
+            title: '提示',
+            msg: '是否退出应用',
+            buttons: ['确定', '取消']
+        }, function(ret, err) {
+            if (ret.buttonIndex == 1) {
+                // 关闭当前的主Widget，就可以实现推出APP的效果
+                api.closeWidget({
+                    silent: true //直接退出，无需提示
+                });
+            }
+        });
+    });*/
+}
+
+function initLocation() {
+    // 加载百度地图模块
+    bMap = api.require('bMap');
+
+    // 获取当前经纬度
+    bMap.getLocation({
+        accuracy: '1000m', // 定位所在城市信息，不需要精准定位
+        autoStop: true, // 定位到经纬度后，立即自动停止定位服务
+        filter: 100000 // 基本无需处理位置更新的情况
+    }, function(ret, err) {
+        // console.log("地图初始化，"+JSON.stringify(ret));
+        if (ret.status) {
+            var localstart=$api.getStorage('localstart');
+            var flag=false;
+            if (!localstart) {
+                flag=true;
+            }else{
+                flag=fnisUpdate(localstart.timestamp,ret.timestamp);
+                if (!flag) {
+                    if (localstart.lon!=ret.lon || localstart.lat!=ret.lat){
+                        flag=true;
+                    }
+                }
+            }
+            if (flag) {
+                    //表示用户移动了，需要更新到目前的位置
+                   var time=getCurrentTime();
+                   console.log("现在的时间："+time+",用户移动了，需要更新地理位置"+JSON.stringify(ret));
+                    $api.setStorage('localstart',ret);
+                    // 需要执行根据经纬度获得详细地理信息
+                    fnGetCityNameFromLocation(ret);
+                    // 位置不一样，需要上报服务器
+                    fnUpdateLocaltion(ret.lon,ret.lat);
+            }
+            else{
+                    // console.log("用户首次使用地理位置"+JSON.stringify(ret));
+                    // $api.setStorage('localstart',ret);
+                    // 需要执行根据经纬度获得详细地理信息
+                    fnGetCityNameFromLocation(ret);
+            }
+            // api.toast({
+            //     msg: '地图坐标获取成功，当前lon='+ret.lon+',lat='+ret.lat,
+            //     duration: 2000,
+            //     location: 'middle'
+            // });
+        } else {
+            alert(err.code);
+        }
+    });
+}
+
+
+var fnisUpdate=function(time,time2) {
+    if (time && time2) {
+        // 比较两个时间，看看是否超过了设定时间updatetime
+        _time=updatetime*60;
+        // console.log("原来的时间戳："+time+"，现在的时间戳："+time2+"，设定更新的秒数："+_time);
+        time+="";
+        time2+="";
+        time0=time.slice(0,10);
+        time2=time2.slice(0,10);
+        ctime=time2-time0;
+        // console.log("截取后的，原来的时间戳："+time0+"，现在的时间戳："+time2+"，设定更新的秒数："+_time);
+        // console.log("算出来的差值："+ctime);
+        if (_time<ctime) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// 根据经纬度获得城市名称
+function fnGetCityNameFromLocation(location_) {
+    bMap.getNameFromCoords({
+        lon: location_.lon,
+        lat: location_.lat
+    }, function(ret, err) {
+        // console.log("获取地理位置="+JSON.stringify(ret));
+        if (ret.status) {
+            // 判断当前所在的城市与上一次选择的城市是否一致
+            // fnCheckCityChange(ret.city);
+            //默认地址设置为成都
+            // api.toast({
+            //     msg: '地图初始化成功，当前城市：'+ret.city,
+            //     duration: 2000,
+            //     location: 'middle'
+            // });
+            var localInfo=$api.getStorage('localInfo');
+            if (localInfo) {
+                if (localInfo.lon!=ret.lon || localInfo.lon!=ret.lon) {
+                    //表示用户移动了，需要更新到目前的位置
+                   console.log("用户移动了，需要更新详细位置信息"+ret.address);
+                    $api.setStorage('localInfo',ret);
+                    updateAddr(ret.address);
+                }
+            }else{
+                console.log("用户首次使用更新详细位置信息"+ret.address);
+                $api.setStorage('localInfo',ret);
+                updateAddr(ret.address);
+            }
+        }
+    });
+}
+
+// 上报服务器配送员位置
+var fnUpdateLocaltion=function(lon,lat) {
+    var userInfo = $api.getStorage('userInfo');
+    if (userInfo) {
+        var params='&user_id='+userInfo.userId+'&pointx='+lon+'&pointy='+lat;
+        console.log("上报服务器配送员位置 参数="+params);
+        setBugReport(200,"上报服务器配送员位置 参数="+params,'');
+        api.ajax({
+            url: 'http://api.isimida.cn/?service=App.Courier_UserTrail.SetTrail' + params,
+            method: 'get'
+        }, function(ret, err) {
+            var rets=ret.data;
+            data=rets;
+            console.log("上报服务器配送员位置,请求结果,"+JSON.stringify(ret));
+            if (ret.ret=200) {
+                console.log("上报服务器配送员位置成功");
+            } else {
+                console.log("上报服务器配送员位置失败");
+            }
+        });
+    }
+}
+
+// 更新地址信息
+var updateAddr=function(addr){
+    var addrNow=$api.byId('addrNow');
+    if (addr) {
+        addrNow.innerHTML=addr;
+    }
+}
+
+
+var fnsetAddr=function() {
+    var localInfo=$api.getStorage('localInfo');
+    if (localInfo) {
+        updateAddr(localInfo.address);
+    }else{
+        updateAddr('四川省成都市');
+    }
+}
+
+function getTodayOrderList() {
+    var userInfo = $api.getStorage('userInfo');
+    if (userInfo) {
+        api.showProgress({
+            style: 'default',
+            animationType: 'fade',
+            title: '努力加载中...',
+            text: '请稍后...',
+            modal: false
+        });
+        var params='&user_id='+userInfo.userId;
+        console.log("加载今日订单 参数="+params);
+        setBugReport(200,'加载今日订单','');
+        api.ajax({
+            url: 'http://api.isimida.cn/?service=App.Courier_Order.GetUserDateOrderList' + params,
+            method: 'get'
+        }, function(ret, err) {
+            // 隐藏加载状态对话框
+            api.hideProgress();
+            var rets=ret.data;
+            data=rets;
+            // console.log("订单请求结果,"+JSON.stringify(ret));
+            if (ret.ret=200 && rets.length > 0) {
+                // 在界面中更新订单列表显示
+                fnUpdateOrderList(rets);
+                console.log("填充数据结果");
+                fnShowOrderList(true);
+                setBugReport(200,'填充数据成功','');
+            } else {
+                fnShowOrderList(false);
+            }
+
+        });
+    }
+}
+
+function initEventListener() {
+    api.addEventListener({
+        name: 'updateOrder'
+    }, function(ret, err) {
+        getTodayOrderList();
+    });
+}
+
+function fnUpdateOrderList(data_) {
+    // api.alert({'title': 'testtitle','msg':JSON.stringify(data_)}); 
+    var list = $api.byId('list');
+    
+
+    // 编译模板函数
+    var tempFn = doT.template($api.byId('template').innerHTML);
+
+    // 使用模板函数生成HTML文本
+    var resultHTML = tempFn(data_);
+    $api.html(list, resultHTML);
+    api.parseTapmode();
+}
+
+// 显示地址列表
+function fnShowOrderList(show_) {
+    var empty = $api.byId('empty');
+    var list = $api.byId('list');
+    if (show_) {
+        empty.style.display = 'none';
+        list.style.display = 'block';
+    } else {
+        empty.style.display = 'block';
+        list.style.display = 'none';
+    }
+}
+
+function fnOpenViewOrderWin(index_) {
+    // api.alert({'title': 'testtitle','msg':JSON.stringify(data[index_])}); 
+    api.openWin({
+        name: 'vieworder',
+        url: './vieworder.html',
+        pageParam: data[index_]
+    });
+}
+
+// 临时替换才地址为端地址
+var getshort=function(addr) {
+    if (addr) {
+        var newadd=addr.replace(/四川省成都市/g,'');
+        return newadd;
+    }
+}
+
+</script>
+</body>
+<script type="text/template" id="template">
+    {{~it:value:index}}
+    <div class="ware ware-1"  tapmode onclick="fnOpenViewOrderWin('{{=index}}');">
+        <div class="info">
+            <div class="order_info">
+                <span class="type_desc">预</span>
+                <span class="money_unit">￥</span><span class="money">{{=getMoney(value.amount)}}</span>
+                <span class="distance">/{{=getDistance(value.distance)}}</span><span class="distance_unit">公里</span>
+                <span class="weight">/{{=value.weight}}</span><span class="weight_unit">公斤</span>
+                <span class="file_list">{{=value.goodsName}}</span>
+                <span class="distance_foryou_desc">距你</span>
+                <span class="distance_foryou">{{=(value.status>50?value.toDistanceForYou:value.fromDistanceForYou)}}</span>
+                <span class="distance_foryou_unit">公里</span>
+            </div>
+            <div class="secord">
+                <span class="source_desc"></span>
+                <span class="source_addr">{{=getshort(value.fromAdddress)}}</span>
+                <span class="order_status_desc">{{=getStatus(value.status)}}</span>
+            </div>
+            <div class="third">
+                <span class="target_desc"></span>
+                <span class="target_addr">{{=getshort(value.toAdddress)}}</span>
+                <span class="order_status_time"></span>
+            </div>
+            <div class="other">
+                <span class="order_code">{{=value.orderNumber}}</span>
+                <span class="create_order_date">{{=getMyDate(value.createdDate)}}</span>
+                <span class="order_status"></span>
+            </div>
+        </div>
+    </div>
+    {{~}}
+</script>
+</html>

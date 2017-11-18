@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>我的订单Frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+    html {
+        height: 100%;
+    }
+    
+    body {
+        min-height: 100%;
+        background-color: #f0f0f0;
+    }
+    
+    .list {
+        display: none;
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+    
+    header {
+        width: 100%;
+        height: 130px;
+        box-sizing: border-box;
+        padding: 4px 10px;
+    }
+    
+    header .banner {
+        width: 100%;
+        height: 100%;
+    }
+    
+
+
+    header .date{
+        text-align: center;
+        font-size: 14px;
+        margin: 10px 0;
+    }
+
+    header .title,header .content{
+        margin-top: 5px;
+    }
+    header .title ul,header .content ul{
+        display:flex;
+
+    }
+    header .title ul li,header .content ul li{
+        float: left;
+        flex: 1;
+    }
+    header .waiting{
+        text-align: center;
+        margin: 5px 0;
+    }
+    header .waiting .week{
+        color:red;
+    }
+    section {
+        position: relative;
+        width: 100%;
+        height: auto;
+        box-sizing: border-box;
+        padding: 0 8px;
+    }
+    
+    .ware-1 {
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
+        padding-top: 10px;
+        border-bottom: 1px solid #d1d1d1;
+    }
+    
+    
+    .ware-1 .info {
+        width: 100%;
+        height: 114px;
+        box-sizing: border-box;
+        font-size: 13px;
+    }
+    .ware-1 .info .order_info {
+        color: red;
+    }
+
+    
+    .push-status {
+        width: 100%;
+        height: 40px;
+        font-size: 16px;
+        color: #888;
+        line-height: 40px;
+        text-align: center;
+        background-color: #fff;
+    }
+
+    .info .order_status_desc,.info .order_status_time{
+        position: absolute;
+        right: 0;
+    }
+    .info .create_order_date{
+        padding-left: 20px;
+    }
+    .info div{
+        height:24px;
+        line-height: 24px;
+    }
+    .info .distance_foryou{
+        margin: 0 -2px;
+    }
+    .info .file_list{
+        margin:0  8px;
+    }
+    
+    .empty {
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        background-image: url(../image/myorder_empty.png);
+        background-repeat: no-repeat;
+        background-size: auto 93px;
+        background-position: center 50px;
+    }
+    
+    .highlight {
+        opacity: 0.7;
+    }
+    </style>
+</head>
+
+<body>
+    <header id="header">
+        <div class="notice">雨天路滑，请各位注意行车安全 </div>
+        <div class="title">
+            <ul>
+                <li>已接订单</li>
+                <li>列表显示</li>
+                <li>地图显示</li>
+                <li>刷新</li>
+            </ul>
+        </div>
+        <section id="list" class="list"></section>
+        <section id="empty" class="empty"></section>
+        <div class="push-status" id="pushStatus">上拉显示更多</div>
+
+        <section id="empty" class="empty"></section>
+        <div class="waiting">中国四川成都一环路南二段17号<a onclick="">更新位置</a></div>
+    </header>
+</body>
+<script type="text/template" id="template">
+    {{~it:value:index}}
+    <div class="ware ware-1">
+        <div class="info">
+            <div class="order_info">
+                <span class="type_desc">预</span>
+                <span class="money_unit">￥</span><span class="money">{{=value.amount}}</span>
+                <span class="distance">/{{=value.distance}}</span><span class="distance_unit">公里</span>
+                <span class="weight">/{{=value.weight}}</span><span class="weight_unit">公斤</span>
+                <span class="file_list">{{=value.file_list}}</span>
+                <span class="distance_foryou_desc">距你</span>
+                <span class="distance_foryou">{{=value.distance}}</span>
+                <span class="distance_foryou_unit">公里</span>
+            </div>
+            <div class="secord">
+                <span class="source_desc"></span>
+                <span class="source_addr">保利中心C座</span>
+                <span class="order_status_desc">已致电</span>
+            </div>
+            <div class="third">
+                <span class="target_desc"></span>
+                <span class="target_addr">A世界电脑城</span>
+                <span class="order_status_time">10:20</span>
+            </div>
+            <div class="other">
+                <span class="order_code">{{=value.order_code}}</span>
+                <span class="create_order_date">{{=value.create_order_date}}</span>
+            </div>
+        </div>
+    </div>
+    {{~}}
+</script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/doT.min.js"></script>
+<script type="text/javascript">
+apiready = function() {
+    initEventListener();
+    getOrderList();
+};
+
+var types = ['公司', '住宅', '学校', '其它'];
+var data;
+
+function getOrderList() {
+    var userInfo = $api.getStorage('userInfo');
+    api.showProgress({
+        style: 'default',
+        animationType: 'fade',
+        title: '努力加载中...',
+        text: '请稍后...',
+        modal: false
+    });
+    var params='&user_id='+userInfo.userId+'&order_status=20&limit=5';
+    api.ajax({
+        url: 'http://api.isimida.cn/?service=App.Courier_Order.GetUserOrderList' + params,
+        method: 'get'
+    }, function(rets, err) {
+        var ret=rets.data;
+        if (ret && ret.length > 0) {
+            data = ret;
+            // 在界面中更新订单列表显示
+            fnUpdateOrderList(ret);
+            fnShowOrderList(true);
+        } else {
+            fnShowOrderList(false);
+        }
+
+        // 隐藏加载状态对话框
+        api.hideProgress();
+    });
+}
+
+function initEventListener() {
+    api.addEventListener({
+        name: 'updateOrder'
+    }, function(ret, err) {
+        getOrderList();
+    });
+}
+
+function fnUpdateOrderList(data_) {
+    // api.alert({'title': 'testtitle','msg':JSON.stringify(data_)}); 
+    var list = $api.byId('list');
+    
+
+    // 编译模板函数
+    var tempFn = doT.template($api.byId('template').innerHTML);
+
+    // 使用模板函数生成HTML文本
+    var resultHTML = tempFn(data_);
+    $api.html(list, resultHTML);
+    api.parseTapmode();
+}
+
+// 显示地址列表
+function fnShowOrderList(show_) {
+    var empty = $api.byId('empty');
+    var list = $api.byId('list');
+    if (show_) {
+        empty.style.display = 'none';
+        list.style.display = 'block';
+    } else {
+        empty.style.display = 'block';
+        list.style.display = 'none';
+    }
+}
+
+function fnOpenSetOrderWin(index_) {
+    // api.alert({'title': 'testtitle','msg':JSON.stringify(data[index_])}); 
+    api.openWin({
+        name: 'setaddress',
+        url: './setaddress.html',
+        pageParam: data[index_]
+    });
+}
+</script>
+
+</html>

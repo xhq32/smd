@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>导航菜单</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <style>
+        html, body {
+            background-color: #dfdede;
+        }
+        li {
+            padding: 3px 10px;
+            border-bottom: 1px solid #d4d3d3;
+        }
+        .liActive {
+            background-color: #3ABA63;
+        }
+        li a {
+            display: block;
+            padding: 10px 30px;
+            font-size: 1.3em;
+        }
+        .update{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <ul>
+        <!-- <li tapmode="liActive" onclick="fnOpenPersonalCenterWin();sliding2();"><a class="home">我的</a></li> -->
+        <li tapmode="liActive" onclick="fnOpenHandbookWin();"><a class="nav0">闪派手册</a></li>
+        <li tapmode="liActive" onclick="fnOpenCommnoQuestionWin();"><a class="nav1">常见问题</a></li>
+        <li tapmode="liActive" onclick="fnOpenOfflineMapWin();"><a class="nav2">离线地图</a></li>
+        <li tapmode="liActive" onclick="fnOpenMessageWin();"><a class="nav3">消息中心</a></li>
+        <!-- <li tapmode="liActive" onclick="fnOpenSettingWin();"><a class="nav4">设置</a></li> -->
+        <li tapmode="liActive" onclick="fnOpenCustomerServiceWin();"><a class="nav5">在线客服</a></li>
+        <!-- <li tapmode="liActive" onclick="fnOpenSettingWin();"><a class="nav6">密码修改</a></li> -->
+        <!-- <li tapmode="liActive" onclick="fnOpenSettingWin();"><a class="nav7">修改手机号</a></li> -->
+        <!-- <li tapmode="liActive" onclick="fnOpenSettingWin();"><a class="nav8">申请更换城市</a></li> -->
+<!--         <li tapmode="liActive" onclick="fnOpenSettingWin();"><a class="nav9">处罚申诉</a></li>
+ -->        <li tapmode="liActive" onclick="fnOpenSettingWin();"><a class="nav10">版本升级</a></li>
+        <li tapmode="liActive" onclick="fnOpenAboutWin();"><a class="nav11">关于</a></li>
+        <!-- <li tapmode="liActive" onclick="fnOpenNoticeWin();"><a class="nav3">通知</a></li> -->
+        <!-- <li tapmode="liActive" id="update" class="update" onclick="setOnStatus()"><a class="nav6">更新状态</a></li> -->
+    </ul>
+</nav>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/func.js"></script>
+<script>
+apiready = function () {
+    console.log("this menu");
+    api.setStatusBarStyle({
+        style: 'dark',
+        color: '#000'
+    });
+    $api.fixStatusBar($api.dom('nav'));
+    // var userInfo = $api.getStorage('userInfo');
+    // if (userInfo) {
+    //     var update = $api.byId('update');
+    //     update.style.display = 'block';
+    // }
+    
+};
+function sliding2() {
+    api.openSlidPane({type: 'hidden'});
+}
+
+
+</script>
+</html>
